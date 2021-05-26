@@ -1,0 +1,42 @@
+/* Common style */
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: inherit;
+}
+
+* {
+  outline: none;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 16px;
+  background-color: #fff;
+}
+
+.container {
+  margin: 0 auto;
+  padding: 0 15px;
+  max-width: 980px;
+}
+
+form {
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 30px;
+}
+
+.mt-lg {
+  margin-top: 60px;
+}
+
+.danger {
+  color: red;
+}
