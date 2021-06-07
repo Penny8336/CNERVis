@@ -44,10 +44,8 @@
 									<button type="button" class="button button1" > Entropy </button>
 									<button type="button" class="button button1" > Length </button>
 									<div id="enterText">
-										<form action="/action_page.php">
-										  <input id="userEnter" type="text" id="fname" name="firstname" placeholder="Enter the word">
-										  <button type="button" class="button button1" > Submit </button>
-										</form>
+										  <input type="text" id="inputWord" placeholder="Enter the word">
+										  <button type="button" class="button button1" onclick="wordSubmit()" > Submit </button>
 									  </div>
 								</div>
 							</div>
@@ -59,7 +57,7 @@
 							<svg></svg>
 						</div>
 						<div class="range-slider" style="width: 80%; padding-left: 10%; padding-top: 10px;" >
-							<input type="text" class="js-range-slider" value="" />
+							
 						</div>
 
 						<!-- <form>
@@ -86,8 +84,8 @@
 					<div class="break"></div>
 
 					<div class="change "> 
-						<button type="button" class="button change1" >WS Neighborhood</button>
-						<button type="button" class="button change1" >POS Neighborhood</button>
+						<button type="button" class="button change1" onclick="WSNeighborhood()">WS Neighborhood</button>
+						<button type="button" class="button change1" onclick="POSNeighborhood()">POS Neighborhood</button>
 					</div>
 					<div class="uncertaintyEach "></div>
 
@@ -181,18 +179,19 @@
 		var json = {{ json | tojson | safe}};        
 	</script>
 		<!-- d3.lasso -->
-	<script type="text/javascript" src="{{url_for('static', filename= 'd3-lasso.min.js')}}"></script>
-	<script type="text/javascript" src="{{url_for('static', filename= 'd3.layout.cloud.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/d3-lasso.min.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/d3.layout.cloud.js')}}"></script>
 <!-- 
 	<script type="text/javascript" src="{{url_for('static', filename= 'color.js')}}"></script>
 	<script type="text/javascript" src="{{url_for('static', filename= 'heatmap.js')}}"></script> -->
 
-	<script type="text/javascript" src="{{url_for('static', filename= 'legend.js')}}"></script>
-	<script type="text/javascript" src="{{url_for('static', filename= 'testingView.js')}}"></script>
-	<script type="text/javascript" src="{{url_for('static', filename= 'projection.js')}}"></script>
-	<script type="text/javascript" src="{{url_for('static', filename= 'detailView.js')}}"></script>
-	<script type="text/javascript" src="{{url_for('static', filename= 'wordCloud.js')}}"></script>
-	<script type="text/javascript" src="{{url_for('static', filename= 'main.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/legend.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/testingView.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/projection.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/detailView.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/wordCloud.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/buttonClick.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/main.js')}}"></script>
 
 	<!-- <script type="text/javascript" src="{{url_for('static', filename= 'tsne.js')}}"></script> -->
 	</html>

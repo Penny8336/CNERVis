@@ -4,7 +4,7 @@ from flask import request, render_template, redirect, url_for
 import tensorflow as tf
 import numpy as np
 from ckiptagger import data_utils, construct_dictionary, WS, POS, NER
-from analysis import each_char,predict,nearest,tsen2json, wordCloudSelect, tsne2json_revised, forHeatmap
+from analysis import each_char,predict,nearest,tsen2json, wordCloudSelect, tsne2json_revised, forHeatmap,wordCollection
 import json
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
@@ -63,11 +63,13 @@ char_list_json = json.load(open("onto_names.json"))
 tra_hidden = np.load('hidden_onto.npy')
 tra_hidden1 = np.load('hidden1_onto.npy')
 
-char_list_json_news = json.load(open("newsCharacter.json"))
-news_pirChart = json.load(open("news_example.json"))
-word_dountChart = json.load(open("word_dountChart_top10.json"))
+char_list_json_news = json.load(open("./json/Characters.json"))
+news_pirChart = json.load(open("./json/news.json"))
+word_dountChart = json.load(open("./json/uncertainty.json"))
 news_hidden = np.load('newsHidden.npy')
 news_hidden1 = np.load('newsHidden1.npy')
+Hiddenstates = np.load('./json/Hiddenstates.npy')
+
 
 #global 
 all_=0
@@ -79,22 +81,42 @@ def index():
     json = {"news":news_pirChart,"dount":word_dountChart}
     return render_template('index.html',json = json)
 
-
 # open_tsne
 @app.route("/open_tsne", methods=['POST'])
 def open_tsne():
     if request.method == 'POST':
-        perp = int(request.form['perp'])
+        pipeline = int(request.form['pipeline'])
         select_character = int(request.form['select_character']) #based on character
         select_article = int(request.form['select_article']) #based on character
         print(select_character,select_article)
-        revised,revised_axis,all_,forward_,backward_ = tsne2json_revised(select_article,news_pirChart[select_article],select_character,news_hidden1[select_character],news_hidden1,perp)
-        revised0,revised_axis0,all0_,forward0_,backward0_ = tsne2json_revised(select_article,news_pirChart[select_article],select_character,news_hidden[select_character],news_hidden,perp)
+
+        hiddenState = Hiddenstates[pipeline]
+        hiddenState1 = Hiddenstates[pipeline+1]
+        revised,revised_axis,all_,forward_,backward_ = tsne2json_revised(select_article,news_pirChart[select_article],select_character,hiddenState1[select_character],hiddenState1,pipeline)
+        revised0,revised_axis0,all0_,forward0_,backward0_ = tsne2json_revised(select_article,news_pirChart[select_article],select_character,hiddenState[select_character],hiddenState,pipeline)
         # revised0,revised_axis0 = tsne2json_revised(select_article,news_pirChart[select_article],select_character,news_hidden[select_character],news_hidden,perp)
         print("Tsne done")
         # scatter = {'hidden':{'tsne':tsen_h,'axis':axis},'hidden1':{'tsne':tsen_h1,'axis':axis_1},"revised":{"tsne":revised,"axis":revised_axis}}
         scatter = {'hidden':{'tsne':revised0,'axis':revised_axis0},"revised":{"tsne":revised,"axis":revised_axis}}
     return {"scatter":scatter,"charJson":char_list_json_news}
+
+@app.route("/changePOSWS", methods=['POST'])
+def changePOSWS():
+    if request.method == 'POST':
+        select_character = int(request.form['select_character']) #based on character
+        select_article = int(request.form['select_article']) #based on character
+        pipeline = int(request.form['pipeline'])
+
+        hiddenState = Hiddenstates[pipeline]
+        hiddenState1 = Hiddenstates[pipeline+1]
+        revised,revised_axis,all_,forward_,backward_ = tsne2json_revised(select_article,news_pirChart[select_article],select_character,hiddenState1[select_character],hiddenState1,pipeline)
+        revised0,revised_axis0,all0_,forward0_,backward0_ = tsne2json_revised(select_article,news_pirChart[select_article],select_character,hiddenState[select_character],hiddenState,pipeline)
+        # revised0,revised_axis0 = tsne2json_revised(select_article,news_pirChart[select_article],select_character,news_hidden[select_character],news_hidden,perp)
+        print("Tsne done")
+        # scatter = {'hidden':{'tsne':tsen_h,'axis':axis},'hidden1':{'tsne':tsen_h1,'axis':axis_1},"revised":{"tsne":revised,"axis":revised_axis}}
+        scatter = {'hidden':{'tsne':revised0,'axis':revised_axis0},"revised":{"tsne":revised,"axis":revised_axis}}
+    return {"scatter":scatter,"charJson":char_list_json_news}
+
 
 # changeWS
 @app.route("/changeWS", methods=['POST'])
@@ -211,6 +233,23 @@ def wordCloud():
             print("wordCloudSelect",wordSelect)
             WC_Select = wordCloudSelect(wordSelect,diff_index_WC)
             return {"WC_Select":WC_Select}
+
+@app.route("/findWord", methods=['POST'])
+def findWord():
+    if request.method == 'POST':
+        word = request.form['word']
+        wordRecode = word_dountChart['wordRecode']
+
+        thesame=[]
+        for index,w in enumerate(wordRecode):
+            if (w == word):
+                thesame.append(index)
+        print("thesame",thesame)
+        wordIndex = np.array(wordRecode)[thesame]
+        temp = wordCollection(thesame,wordIndex)
+
+
+    return temp
 
 if __name__ == "__main__":
     app.run()

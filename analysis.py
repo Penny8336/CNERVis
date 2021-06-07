@@ -27,9 +27,11 @@ for line in f_news.readlines():
 # tra_hidden1 = np.load('hidden1_onto.npy')
 # tra_hidden = np.load('hidden_onto.npy')
 tra_label = np.load('tra_label.npy')
+word2index = np.load('./json/word2index.npy')
 
 char_list_json = json.load(open("onto_names.json"))
 char_list_json_news = json.load(open("newsCharacter.json"))
+char_list = json.load(open("./json/Characters.json"))
 
 # threshold = 1.8
 kur_threshold = 45
@@ -160,12 +162,9 @@ def tsne2json_revised(select_article, article, select_character, select_hidden, 
     #order
     sort_index=[]
     for index in point:
-        print(index)
         sort_index.append(np.sum(abs(select_hidden-tra_hidden[index])))  #the different
 
-    print(sort_index)
     sort_index = np.argsort(sort_index) # samll to big index
-    print("sort_index",sort_index)
     point = np.array(point)[sort_index]
     print("sort point",point[:5])
     print("char_list_json_news",len(char_list_json_news))
@@ -326,4 +325,47 @@ def forHeatmap(logits,label_sentence_list,sentence,entity_list_order,label_list,
         heatMap.append(circle)
 
     return heatMap
+
+def maxEntropyWord(charList):
+    entropyList=[]
+    for i in charList:
+        entropyList.append(i['entropy'])
+    
+    maxEntropy = max(entropyList)
+    return maxEntropy
+
+def wordCollection(thesame,word_):
+    wordCollect=[]
+    entropyOrder=[]
+    entropyMax=0
+    entropyMin=1000
+    for order, index  in enumerate(thesame):
+        eachWord={}
+        word = word_[order]
+        eachWord['word'] = word
+        start = word2index[index]
+        wordChar = char_list[start:start+len(word)]
+        eachWord['dount'] = wordChar
+        eachWord['ner'] = wordChar[0]['ner']
+        maxWordEntropy = maxEntropyWord(char_list[start:start+len(word)])
+        eachWord['max_entropy'] = float(maxWordEntropy)
+        entropyOrder.append(float(maxWordEntropy))
+        wordCollect.append(eachWord)
+
+    entropyOrder = np.array(entropyOrder)
+    entropySort = np.argsort(-entropyOrder)
+    wordCollect_ = np.array(wordCollect)[entropySort]
+    wordCollect_ = list(wordCollect_)
+
+    entropyMax = entropyOrder[entropySort][0]
+    entropyMin = entropyOrder[entropySort][len(entropyOrder)-1]
+    entro = {"max":entropyMax,"min":entropyMin}
+    uncertainty = {'word_collect':wordCollect_,'range':entro}
+
+    return uncertainty
+
+
+
+    
+
 
