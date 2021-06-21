@@ -57,19 +57,63 @@ let color_= {"legend":
     },
 
     "pos":{
-        "A":"#7D6608",
-        "C":"#797D7F",
-        "D":"#E67E22",
-        "I":"#F4D03F",
-        "N":"#1ABC9C",
-        "P":"#3498DB",
-        "T":"#9B59B6",
-        "V":"#E74C3C",
-        "P":"#7B241C"
+        "A":"#7D6608", //非謂形容詞
+        "C":"#797D7F", //連接詞
+        "D":"#E67E22", //副詞
+        "I":"#F4D03F", //感嘆詞
+        "P":"#3498DB", //介詞
+        "T":"#9B59B6", //語助詞
+        "V":"#E74C3C", //動詞
+
+        "Na": "#1D8348", //普通名詞
+        "Nb": "#28B463", //專有名詞
+        "Nc": "#82E0AA", //地方詞
+        "Nd": "#52BE80", //時間詞
+        "Ne": "#117A65", //定詞
+        "Nf": "#229954", //量詞
+        "Ng": "#52BE80", //後置詞
+        "Nh": "#D4EFDF", //代名詞
+        "Nv": "#7FB3D5", //名物化動詞
+
+        "De":"#7B241C", //的之得地
+        "SH": "#7B241C", //是
+        "FW":"#7B241C", //外文
+
+        "Z":"#ABB2B9"
     }
 }
 
+let punctuationSet = new Set(["COMMACATEGORY", "COLONCATEGORY", "DASHCATEGORY", "DOTCATEGORY", 
+"ETCCATEGORY", "EXCLAMATIONCATEGORY", "PARENTHESISCATEGORY","PAUSECATEGORY","PERIODCATEGORY","QUESTIONCATEGORY",
+"SEMICOLONCATEGORY", "SPCHANGECATEGORY","WHITESPACE"]);
 
+var select = d3.select("#choose").append("select")
+.attr("class", "pretty-select")
+.attr("id", "selections")
+.on('change', onchange);
+posObject=color_.pos
+
+let choosePos = [];
+let twoCharSet = new Set();
+
+Object.entries(posObject).forEach(([key, value]) => {
+    let eachPos = new Object();
+    eachPos.color = value;
+    eachPos.name = key;
+    choosePos.push(eachPos)
+
+    if (key.length ==2){
+        twoCharSet.add(key)
+    }
+});
+console.log(choosePos)
+console.log(twoCharSet)
+
+select.selectAll("option")
+.data(choosePos)
+.enter().append("option")
+.attr("value", function (d) {return d.color;})
+.text(function (d) {return d.name;})
 
 function open_tsne_1(scatter,charJson,select_char){
 
@@ -186,10 +230,36 @@ function get_group(groups,groups_index,content,select_,select_char){
         context_ = context_.concat(slice_word)
     })
 
+    posSet = new Set();
     console.log(context_)
+    context_.forEach(d => {
+        posTag = d.pos
+        if (punctuationSet.has(posTag)){
+            return posSet.add("Z")
+        }
+        else if(twoCharSet.has(posTag.slice(0,2))){
+            return posSet.add(posTag.slice(0,2))
+        }
+        else{
+            return posSet.add(posTag.slice(0,1))
+        }
+    });
 
+    posSet= [...posSet]
+    console.log(posSet)
+
+    posSet.sort(function (a, b) {
+        return a.localeCompare(b);
+      });
+
+    console.log(posSet)
+    draw_legend(posSet,"#posLegend","legendsPOS")
     returnIndex_(groups_index,context_,select_,1,context_)
-
+    
+    
+    
+    // draw_legend()
+    // draw_legend(json.dount.label,"#totalLe","legendsAll")
 }
 
 function draw_block_pos_color(block,indexs){
@@ -373,7 +443,6 @@ setValue = ()=>{
 // document.addEventListener("DOMContentLoaded", setValue);
 // range.addEventListener('input', setValue);
 
-// draw_legend()
 // draw_heatmap(json.heatMap)
 console.log(json)
 draw_testingOverview(json.dount.word_collect,json.news,json.dount.range)

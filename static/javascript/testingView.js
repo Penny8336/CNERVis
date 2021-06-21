@@ -92,7 +92,7 @@ function draw_testingOverview(scatter,news,range){
 
 
                 draw_heatmap(news[article_index].heatmap, index, word)
-                draw_legend(news[article_index].set,"#heatMap_set","legendAll")
+                draw_legend(news[article_index].set,"#heatMap_set","legendsAll")
             })
 
 
@@ -186,12 +186,16 @@ function draw_testingOverview(scatter,news,range){
             dount = d.dount
             tooltipLength = d.dount.length
             index = d.index
-            x =  d3.mouse(this)[0]+400
-            y =  d3.mouse(this)[1]+100
+            // x =  d3.mouse(this)[0]+400
+            // y =  d3.mouse(this)[1]+100
+            x = d3.event.pageX
+            y = d3.event.pageY
+
+            // console.log(x,y-200,d3.mouse(this)[0]+400,d3.mouse(this)[1]+100)
 
             tooltip
             .html("details")
-            .attr("transform", "translate(" + x + "," + (y) + ")")
+            .attr("transform", "translate(" + (x) + "," + (y-200) + ")")
 
             tooltip
             .append('rect')
@@ -242,12 +246,6 @@ function draw_testingOverview(scatter,news,range){
             .style("color","white")
             .attr("id",d => {return "index" + d.index})
     
-
-
-
-
-
-
 
         })
         .on("mouseleave", function(){

@@ -50,3 +50,23 @@ function  POSNeighborhood(){
         } 
     }); 
 }
+
+function HidePOS(){
+    d3.select("#context_svg")
+    .selectAll("rect")
+    .attr("fill", "white")
+}
+
+
+
+function posOrTraining(){
+
+}
+
+function onchange(){
+    console.log("hi there")
+    console.log(d3.select(this))
+    console.log(clickTheCharacter)
+    changePOS+=1
+    console.log("onchange")
+}

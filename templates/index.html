@@ -38,7 +38,7 @@
 							<h5>Uncertainty View</h5>
 						</div>
 						<div class = uncertaintySplit>
-							<div class="half_h uncertaintyEach button_">
+							<div class=" uncertaintyEach button_">
 								<div style="padding-left: 10px;" >
 									<button type="button" class="button button1" >Import Testing</button>
 									<button type="button" class="button button1" > Entropy </button>
@@ -49,7 +49,7 @@
 									  </div>
 								</div>
 							</div>
-							<div id = "totalLe" style="padding-bottom: 10px; padding-top: 8px ;" class="half_h uncertaintyEach legend buss_ legendAll">
+							<div id = "totalLe" style="padding-bottom: 10px; padding-top: 8px ;" class="split65 uncertaintyEach legend buss_">
 							</div>
 						</div>
 						
@@ -74,7 +74,7 @@
 						<div style="padding-left: 11px; padding-top: 2px;padding-bottom: 10px; height: 30px; background-color: #cad7db;">
 							<h5>Content View</h5>
 						</div>
-						<div id="heatMap_set" class="legend"style="padding-left: 11px; padding-top: 2px; height: 30px;"></div>
+						<div id="heatMap_set" class="legend "style="padding-left: 11px; padding-top: 2px; height: 30px;"></div>
 
 						<div class = box id="heatMap" style="overflow: auto; height: 380px;"></div>
 						<div id="colorSet" class="legend"style="padding-left: 11px; padding-bottom: 10px; height: 30px;"></div>
@@ -136,14 +136,19 @@
 							<h5>Label View</h5>
 						</div>	
 						<div class = uncertaintySplit>
-							<div class="half_h uncertaintyEach button_">
+							<div class=" uncertaintyEach button_">
 								<div style="padding-left: 10px;" >
-									<button type="button" class="button pulldown" >Change POS</button>
-									<button type="button" class="button button1" >Hide POS</button>
+									<div class="dropdown">
+										<div class="dropbtn" id="choose" style="padding-bottom: 10px; padding-top: 8px ;">
+										  <!-- <i class="fa fa-caret-down"></i> -->
+										</div>
+									</div>
+									<!-- <button type="button" class="button pulldown" onclick="posOrTraining()" >Change POS</button> -->
 								</div>
 							</div>
+							<div class="split65 uncertaintyEach legend buss_ legendAll" id="posLegend" style="padding-bottom: 10px; padding-top: 8px ;"></div>
+							<!-- <button type="button" class="button button1" onclick="HidePOS()" style="height: 28px;">Hide POS</button> -->
 						</div>	
-						<div id="Label_set" class="legend"style="padding-left: 11px; padding-top: 2px; height: 30px;"></div>
 
 						<div class = box id="context" style="text-align: center;"></div>
 						<div class="legend" id="legend_l" ></div>
@@ -156,12 +161,13 @@
 						</div>	
 						<div class = uncertaintySplit>
 							<div class="half_h uncertaintyEach button_">
-								<div style="padding-left: 10px;" >
+								<div style="padding-left: 10px; " >
 									<button type="button" class="button button1" >Word Cloud</button>
 								</div>
 							</div>
 						</div>	
-						<div id="wordCloud"></div>
+
+						<div id="wordCloud" style="text-align: center;"></div>
 						<div class = box id="tra_context" style="text-align: center;"></div>
 						<div class="legend" id="legend_r" ></div>
 
@@ -188,7 +194,7 @@
 	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/legend.js')}}"></script>
 	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/testingView.js')}}"></script>
 	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/projection.js')}}"></script>
-	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/detailView.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/labelView.js')}}"></script>
 	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/wordCloud.js')}}"></script>
 	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/buttonClick.js')}}"></script>
 	<script type="text/javascript" src="{{url_for('static', filename= 'javascript/main.js')}}"></script>

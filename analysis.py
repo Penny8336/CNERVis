@@ -88,7 +88,8 @@ def nearest(click_index,click_h,tra_hidden,h_direct,top_k):
     #for top_k
     context_ = [] 
     for i, index in enumerate(diff_index_top_k):
-        slice_word = char_list_json[index-5:index+8]
+        print(char_list_json[index])
+        slice_word = char_list_json[index-5:index+6]
         context_ += slice_word[:]
 
     #for wordcloud
@@ -104,14 +105,14 @@ def nearest(click_index,click_h,tra_hidden,h_direct,top_k):
     for item in wordCloud.items():
         wordCloud_.append({'text':item[0],'frequency':item[1]})
     
-    return context_,wordCloud_,diff_index_WC
+    return context_,wordCloud_,diff_index_WC,diff_index_top_k
 
 def wordCloudSelect(wordSelect,diff_index_WC):
     context_ = [] 
     for i, index in enumerate(diff_index_WC):
         # print(char_list_json[index]['character'], wordSelect)
         if (char_list_json[index]['character'] == wordSelect):
-            slice_word = char_list_json[index-4:index+7]
+            slice_word = char_list_json[index-5:index+6]
             context_ += slice_word[:]    
     return context_
 
@@ -122,7 +123,6 @@ def find_sub_list(sl,l):
     for ind in (i for i,e in enumerate(l) if e==sl[0]):
         if l[ind]==sl: #for 一個字相同時  print(l[ind:ind+sll]) 1個字以上相同
 #             results.append((ind,ind+sll-1))
-            print(onto_string_news[ind:ind+sll+2])
             results.append(ind)
     return results
 

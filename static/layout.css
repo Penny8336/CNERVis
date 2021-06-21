@@ -49,6 +49,15 @@
   /* box-shadow: 0 0 15px rgb(255, 255, 255); */
 }
 
+.legendsPOS {
+  margin: 4px;
+  padding: 0.3px;
+  font-size: 15px;
+  width: 30px;
+  text-align: center;
+  /* box-shadow: 0 0 15px rgb(255, 255, 255); */
+}
+
 
 .colorlegendsAll {
   margin: 4px;
@@ -74,6 +83,10 @@
 
 .half_w{
   width: 48%;
+}
+
+.split65{
+  width: 65%;
 }
 
 .TTT{
@@ -108,13 +121,8 @@
   align-content: flex-start ;
 }
 
-.button_{
-  flex-basis: 280px;
-}
 
-.buss_{
-  flex-basis: 650px;
-}
+
 .uncertaintyEach + .uncertaintyEach {
   margin-left: 1%;
 }
