@@ -1,5 +1,5 @@
 function draw_legend(legend_set,legendID,classes){
-    console.log(legend_set)
+    // console.log(legend_set)
     colorScale 
     .domain([0,0.2, 0.5, 0.7, 1, 1.2, 1.5])
     .range(d3.schemeOrRd[8]);
@@ -8,9 +8,7 @@ function draw_legend(legend_set,legendID,classes){
 
     $(legendID).empty()
 
-    d3.selectAll(legendID)
-    .style("padding-bottom","13px")
-    .style("padding-left","10px")
+
 
     legend_l    
     .selectAll(legendID)
@@ -43,7 +41,6 @@ function draw_color_legend(legend_set,legendID,classes){
     $(legendID).empty()
 
     d3.selectAll(legendID)
-    .style("padding-bottom","13px")
     .style("padding-left","10px")
 
     legend_l    

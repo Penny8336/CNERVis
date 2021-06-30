@@ -1,4 +1,5 @@
-console.log(json)
+selectedCharacter=0
+selectedArticle=0
 legend_set = json.entity_set
 default_opacity = 0.8
 // scatter1 = json.scatter.hidden1
@@ -57,40 +58,42 @@ let color_= {"legend":
     },
 
     "pos":{
-        "A":"#7D6608", //非謂形容詞
-        "C":"#797D7F", //連接詞
-        "D":"#E67E22", //副詞
-        "I":"#F4D03F", //感嘆詞
-        "P":"#3498DB", //介詞
-        "T":"#9B59B6", //語助詞
-        "V":"#E74C3C", //動詞
+        "A":"rgb(224,42,97)", //非謂形容詞
+        "C":"rgb(241,203,213)", //連接詞
+        "D":"rgb(238,13,14)", //副詞
+        "I":"rgb(250,209,57)", //感嘆詞
+        "P":"rgb(127,136,97)", //介詞
+        "T":"rgb(254,143,6)", //語助詞
+        "V":"rgb(77,87,168)", //動詞
 
-        "Na": "#1D8348", //普通名詞
-        "Nb": "#28B463", //專有名詞
-        "Nc": "#82E0AA", //地方詞
-        "Nd": "#52BE80", //時間詞
-        "Ne": "#117A65", //定詞
-        "Nf": "#229954", //量詞
-        "Ng": "#52BE80", //後置詞
-        "Nh": "#D4EFDF", //代名詞
-        "Nv": "#7FB3D5", //名物化動詞
+        "Na": "rgb(46,149,104)", //普通名詞
+        "Nb": "rgb(98,235,201)", //專有名詞
+        "Nc": "rgb(2,83,29)", //地方詞
+        "Nd": "rgb(155,199,50)", //時間詞
+        "Ne": "rgb(185,220,202)", //定詞
+        "Nf": "rgb(62,73,70)", //量詞
+        "Ng": "rgb(103,240,89)", //後置詞
+        "Nh": "rgb(126,43,25)", //代名詞
+        "Nv": "rgb(218,114,112)", //名物化動詞
 
-        "De":"#7B241C", //的之得地
-        "SH": "#7B241C", //是
-        "FW":"#7B241C", //外文
+        "De":"rgb(192,152,253)", //的之得地
+        "SH":"rgb(116,22,142)", //是
+        "FW":"rgb(239,106,222)", //外文
 
-        "Z":"#ABB2B9"
+        "Z":"rgb(32,142,183)"
     }
 }
+
 
 let punctuationSet = new Set(["COMMACATEGORY", "COLONCATEGORY", "DASHCATEGORY", "DOTCATEGORY", 
 "ETCCATEGORY", "EXCLAMATIONCATEGORY", "PARENTHESISCATEGORY","PAUSECATEGORY","PERIODCATEGORY","QUESTIONCATEGORY",
 "SEMICOLONCATEGORY", "SPCHANGECATEGORY","WHITESPACE"]);
 
+
 var select = d3.select("#choose").append("select")
 .attr("class", "pretty-select")
 .attr("id", "selections")
-.on('change', onchange);
+.on('change', changePOS);
 posObject=color_.pos
 
 let choosePos = [];
@@ -106,8 +109,8 @@ Object.entries(posObject).forEach(([key, value]) => {
         twoCharSet.add(key)
     }
 });
-console.log(choosePos)
-console.log(twoCharSet)
+// console.log(choosePos)
+// console.log(twoCharSet)
 
 select.selectAll("option")
 .data(choosePos)
@@ -115,152 +118,100 @@ select.selectAll("option")
 .attr("value", function (d) {return d.color;})
 .text(function (d) {return d.name;})
 
-function open_tsne_1(scatter,charJson,select_char){
-
-    console.log("select_char",select_char)
-
+function open_tsne_1(scatter,charJson){
     $('#hid1_all > svg').remove()
     $('#hid1_forward > svg').remove()
     $('#hid1_backward > svg').remove()
 
-
-    draw_tsne(scatter.tsne.all_,scatter.axis.all_,'#hid1_all',charJson,select_char)
-    draw_tsne(scatter.tsne.forward_,scatter.axis.forward_,'#hid1_forward',charJson,select_char)
-    draw_tsne(scatter.tsne.backward_,scatter.axis.backward_,'#hid1_backward',charJson,select_char)
-
-
-      
-
-        // $('#hid1_all').empty()
-        // $('#hid1_forward').empty()
-        // $('#hid1_backward').empty()
-        // $('#hid0_all').empty()
-        // $('#hid0_forward').empty()
-        // $('#hid0_backward').empty()
-    
+    draw_tsne(scatter.tsne.all_,scatter.axis.all_,'#hid1_all',charJson)
+    draw_tsne(scatter.tsne.forward_,scatter.axis.forward_,'#hid1_forward',charJson)
+    draw_tsne(scatter.tsne.backward_,scatter.axis.backward_,'#hid1_backward',charJson)
+  
 }
 
-function open_tsne_0(scatter,charJson,select_char){
+function open_tsne_0(scatter,charJson){
     $('#hid0_all > svg').remove()
     $('#hid0_forward > svg').remove()
     $('#hid0_backward > svg').remove()
 
-
-    draw_tsne(scatter.tsne.all_,scatter.axis.all_,'#hid0_all',charJson,select_char)
-    draw_tsne(scatter.tsne.forward_,scatter.axis.forward_,'#hid0_forward',charJson,select_char)
-    draw_tsne(scatter.tsne.backward_,scatter.axis.backward_,'#hid0_backward',charJson,select_char)
-    // var x = document.querySelectorAll(".hid0");
-    // console.log(x)
-    // var x = document.getElementsByClassName("hid0");
-    // if (x.style.display === "none") {
-    //   x.style.display = "block";
-    // } else {
-    //   x.style.display = "none";
-    // }
-
-    // $('#hid0_all').empty()
-    // $('#hid0_forward').empty()
-    // $('#hid0_backward').empty()
-    
-    // console.log("hi")
-    // let hidden0_check = document.getElementsByName('hidden0')[0].checked;
-
-    // console.log("open_tsne_0",hidden0_check);//false
-    // if (hidden0_check == true){
-    //     console.log("hi there")
-    //     console.log(scatter)
-
-    //     draw_tsne(scatter.tsne.all_,scatter.axis.all_,'#hid0_all',charJson,select_char)
-    //     draw_tsne(scatter.tsne.forward_,scatter.axis.forward_,'#hid0_forward',charJson,select_char)
-    //     draw_tsne(scatter.tsne.backward_,scatter.axis.backward_,'#hid0_backward',charJson,select_char)
-
-    //   }
-    //   else{
-    //     $('#hid0_all').empty()
-    //     $('#hid0_forward').empty()
-    //     $('#hid0_backward').empty()
-    // }
+    draw_tsne(scatter.tsne.all_,scatter.axis.all_,'#hid0_all',charJson)
+    draw_tsne(scatter.tsne.forward_,scatter.axis.forward_,'#hid0_forward',charJson)
+    draw_tsne(scatter.tsne.backward_,scatter.axis.backward_,'#hid0_backward',charJson)
 }
 
 
 
 
+selectedContext=[]
+// function get_group(context,groups,groups_index,content,select_,select_char){
+//     //top row is selectedCharacter
+//     neighborhood = []
+//     if (!(groups.includes(selectedCharacter))){
+//         neighborhood = [selectedCharacter]
+//         neighborhood = neighborhood.concat(groups)
+//     }
+//     else{
+//         neighborhood = groups
+//     }
 
-function get_group(groups,groups_index,content,select_,select_char){
-    // if continuous
-    groups_=[]
-    if (!(groups.includes(select_char))){
-        groups_=[select_char]
-    }
-    else{
-        groups_=[]
-    }
+//     console.log(neighborhood)
 
-    groups_= groups_.concat(groups);
-    console.log(groups_)
-    console.log(groups)
-    let skip = 0
-    for (let i = 0; i < groups.length-1; i++){
-        console.log(groups_[i],groups[i])
-        if (!(groups_[i]==groups[i+1])){
-            skip += 1
-            console.log("skip",groups_[i],groups[i])
-        }
-        else{
-            groups_.push(groups[i])
-            console.log("push",groups_[i],groups[i])
-        }
-        
-    }
-    console.log(groups_)
+//     groupsAvoidOverlap = []
+//     labelViewLength = neighborhood.length-1
+//     //avoid overlap
+//     for (let i = 0; i < labelViewLength; i++){
+//         if (!((neighborhood[i]+1 == neighborhood[i+1])||(neighborhood[i]-1 == neighborhood[i+1]))){
+//             groupsAvoidOverlap.push(neighborhood[i])
+//         }
+//     }
+//     groupsAvoidOverlap.push(neighborhood[labelViewLength])
+//     console.log(groupsAvoidOverlap)
 
-    context_=[]
-    groups_.forEach(function(d,i){
-        // if (d-4==4){
-        //     slice_word=
-        // }
-        // else if(d-4<0){
-            
-        // }
-        // else{
-        //     slice_word=content[d-4,d+7]
-        // }
-        // console.log(slice_word)
-        slice_word=content.slice(d-5,d+6)
-        context_ = context_.concat(slice_word)
-    })
+//     context_=[]
+//     groupsAvoidOverlap.forEach(function(d,i){
+//         slice_word=content.slice(d-5,d+6)
+//         context_ = context_.concat(slice_word)
+//     })
 
-    posSet = new Set();
-    console.log(context_)
-    context_.forEach(d => {
-        posTag = d.pos
-        if (punctuationSet.has(posTag)){
-            return posSet.add("Z")
-        }
-        else if(twoCharSet.has(posTag.slice(0,2))){
-            return posSet.add(posTag.slice(0,2))
-        }
-        else{
-            return posSet.add(posTag.slice(0,1))
-        }
-    });
+//     posSet = new Set();
+//     // console.log(context_)
+//     context_.forEach(d => {
+//         posTag = d.pos
+//         if (punctuationSet.has(posTag)){
+//             return posSet.add("Z")
+//         }
+//         else if(twoCharSet.has(posTag.slice(0,2))){
+//             return posSet.add(posTag.slice(0,2))
+//         }
+//         else{
+//             return posSet.add(posTag.slice(0,1))
+//         }
+//     });
 
-    posSet= [...posSet]
-    console.log(posSet)
+//     posSet= [...posSet]
+//     // console.log(posSet)
 
-    posSet.sort(function (a, b) {
-        return a.localeCompare(b);
-      });
+//     posSet.sort(function (a, b) {
+//         return a.localeCompare(b);
+//       });
 
-    console.log(posSet)
-    draw_legend(posSet,"#posLegend","legendsPOS")
-    returnIndex_(groups_index,context_,select_,1,context_)
+//     selectedContext = context_
+//     // console.log(posSet)
+//     draw_legend(posSet,"#posLegend","legendsPOS")
+
+//     neighborhoodChar = ""
+//     neighborhood.forEach(function(d){
+//         neighborhoodChar = neighborhoodChar.concat("#index"+d+",")
+//     });
+//     neighborhoodChar = neighborhoodChar.slice(0,-1)
+
+//     returnIndex_(neighborhoodChar,groups_index,context,select_,1,context_)
     
     
     
-    // draw_legend()
-    // draw_legend(json.dount.label,"#totalLe","legendsAll")
-}
+//     // draw_legend()
+//     // draw_legend(json.dount.label,"#totalLe","legendsAll")
+// }
 
 function draw_block_pos_color(block,indexs){
     block.attr("id",d => {return "index" + d.index})
@@ -285,7 +236,7 @@ function draw_block_truth_color(block){
     .on("mouseover", function(d){console.log(this)})
     // .on("mousemove", mousemove_truth)
     // .on("mouseleave", mouseleave)
-    console.log(block.selectAll("g"))
+    // console.log(block.selectAll("g"))
     block.style("opacity", function(d){ return d.opacity})
     // block.attr("fill",function(d) { return color_.waffle[d.label]})
 }
@@ -300,130 +251,25 @@ var delay = (function() {
      timer = setTimeout(callback, ms); 
     }; 
 })(); 
-selectCharacter=0
-articleIndex=0
-function post_tsne(select_character,article_index,pipeline){
-    console.log("perp",perp)
-    console.log(select_character,article_index)
-    selectCharacter= select_character
-    articleIndex = article_index
+
+function post_tsne(pipeline){
+    console.log(selectedCharacter,selectedArticle)
     $.ajax({ 
         type: "POST", 
         url: "/open_tsne", 
-        data: {"open_tsne":1,"pipeline":pipeline,"changeWS":0,"select_character":select_character,'select_article':article_index},
+        data: {"pipeline":pipeline,"selectedCharacter":selectedCharacter,'selectedArticle':selectedArticle},
         success: function(data,textStatus,jqXHR ){ 
             console.log("hi there post_tsne success")      
-            console.log(data)
+            // console.log(data)
             chatJson = data.charJson
             scatter = data.scatter
-            open_tsne_1(scatter.revised,chatJson,select_character)
-            open_tsne_0(scatter.hidden,chatJson,select_character)
+            open_tsne_1(scatter.hidden1,chatJson)
+            open_tsne_0(scatter.hidden,chatJson)
             // open_tsne_0(scatter.hidden)
             // draw_heatmap(scatter.hidden1.tsne.all_)
         } 
     }); 
 }
-
-
-// function draw_heatmap(content){
-//     colorScale 
-//     .domain([0,0.2, 0.5, 0.7, 1, 1.2, 1.5])
-//     .range(d3.schemeOrRd[8]);
-    
-//     // console.log(content)
-//     $('#heatMap').empty()
-//     let heatMap = d3.select("#heatMap")
-//     click_flag=0
-//     var heapMaps = heatMap
-//         .selectAll()
-//         .data(content)
-//         .enter()
-//         .append('div')
-//         .text(d => { return d.character})
-//         .style("font-size","4px")
-//         .style("text-align","center")
-//         .style("color", "white")
-//         .attr('class', 'heatMaps')
-//         .style('background-color', function (d){return color_.waffle[d.ner]})
-//         .style('border', function (d){
-//             // if (!(d.kurtosis)) {
-//             //     return "3px solid"
-//             // }
-//             // console.log(d.entropy)
-//             return "3px solid"
-//         })
-
-//         .style('border-color', function (d){
-//             // if (!(d.kurtosis)) {
-//             //     return "red"
-//             // }
-//             // console.log(d.entropy)
-//             return colorScale(d.entropy)
-//         })  
-//         .attr("id",d => {return "index" + d.index})
-//         .style("opacity",default_opacity)
-//         .on("click", function(d){
-//             click_flag = 1
-//             // heatMap.style('opacity', default_opacity)
-//             d3.selectAll("#"+this.id)
-//             .style('opacity', 1)
-//             d3.selectAll("#"+this.id)
-//             .style('box-shadow', "3px 3px 12px black")
-
-//             d3.select("#c_"+this.id)
-//             .style('opacity', 1)
-//             .attr("stroke-width", 2)
-
-//             select_character = d.index
-//             post_tsne(select_character)
-
-//         })
-//         .on("mousemove",function(d){ 
-//             if (!click_flag){
-//                 d3.select("#heatMap").selectAll("#"+this.id)
-//                     .style('opacity', 1)
-//                 d3.selectAll("#"+this.id)
-//                 .style('box-shadow', "3px 3px 12px black")
-
-//                 d3.select("#c_"+this.id)
-//                     .style('opacity', 1)
-//                     .attr("stroke-width", 2)
-//                 // d3.select("#c_"+this.id)
-//                 //     .data(function(d){ return d})
-//                 //     .enter()
-//                 //     .append("cirlce ")
-//                 //     .attr("cx",function(d) {
-//                 //         console.log(d)
-//                 //         return d.x})
-//                 //     .attr("cy",function(d) {return d.y})
-//                 //     .attr('r', 5)
-//                 //     .attr("stroke", black)
-//                 //     .attr("stroke-width", 3)
-
-//             }})
-//         .on("mouseleave", function(d){ 
-//             if (!click_flag){
-//                 d3.select("#heatMap").selectAll("#"+this.id)
-//                     .style('opacity', default_opacity)
-//                     .style('box-shadow', "")
-
-//                 d3.select("#c_"+this.id)
-//                     .style('opacity', default_opacity)
-//                     .attr("stroke-width", 0.5)
-//             }})
-
-//         // heapMaps
-//         // .append('span')
-//         // .text(d => { 
-//         //     console.log(d)
-//         //     return d.character})
-//         // .style("font-size","8px")
-//         // .style("text-align","center")
-        
-
-// }
-
-
 
 let perp=0
 //slider
@@ -431,7 +277,7 @@ const range = document.getElementById('range'),
 rangeV = document.getElementById('rangeV'),
 setValue = ()=>{
     const newValue = Number( (range.value - range.min) * 100 / (range.max - range.min) );
-    console.log(range.value)
+    // console.log(range.value)
     perp =  range.value
 
     delay(function(){
@@ -444,7 +290,7 @@ setValue = ()=>{
 // range.addEventListener('input', setValue);
 
 // draw_heatmap(json.heatMap)
-console.log(json)
+// console.log(json)
 draw_testingOverview(json.dount.word_collect,json.news,json.dount.range)
 draw_legend(json.dount.label,"#totalLe","legendsAll")
 draw_color_legend([0,0.2, 0.5, 0.7, 1, 1.2, 1.5],"#colorSet","colorlegendsAll")

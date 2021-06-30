@@ -29,8 +29,6 @@
   display: flex;
   flex-flow: row wrap;
   align-items: stretch;
-  padding-bottom: 10px;
-  padding-left: 15px;
 
   /* background-color: #cad7db; */
 }
@@ -42,7 +40,7 @@
 
 .legendsAll {
   margin: 4px;
-  padding: 0.3px;
+  /* padding: 0.3px; */
   font-size: 15px;
   width: 50px;
   text-align: center;
@@ -57,7 +55,6 @@
   text-align: center;
   /* box-shadow: 0 0 15px rgb(255, 255, 255); */
 }
-
 
 .colorlegendsAll {
   margin: 4px;
@@ -105,7 +102,7 @@
 }
   
 .item1 {
-    flex-grow: 2;
+    flex-grow: 1;
     margin-bottom: 1%;
     /* justify-content: center; */
     background-color: rgb(255, 255, 255);
@@ -121,7 +118,9 @@
   align-content: flex-start ;
 }
 
-
+/* .uncertaintyEach{
+  background-color: #EC888C;
+} */
 
 .uncertaintyEach + .uncertaintyEach {
   margin-left: 1%;
@@ -139,6 +138,7 @@
     /* color: rgb(0, 0, 0); */
     /* border-radius: 5px; */
     padding: 10px;
+    padding-top: 0px;
     /* font-size: 150%; */
     /* border-style: ridge; */
 

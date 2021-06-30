@@ -4,7 +4,7 @@ from flask import request, render_template, redirect, url_for
 import tensorflow as tf
 import numpy as np
 from ckiptagger import data_utils, construct_dictionary, WS, POS, NER
-from analysis import each_char,predict,nearest,tsen2json, wordCloudSelect, tsne2json_revised, forHeatmap,wordCollection
+from analysis import nearest, wordCloudSelect, tsne2json_revised, wordCollection
 import json
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
@@ -57,19 +57,22 @@ def index():
 @app.route("/open_tsne", methods=['POST'])
 def open_tsne():
     if request.method == 'POST':
-        pipeline = int(request.form['pipeline'])
-        select_character = int(request.form['select_character']) #based on character
-        select_article = int(request.form['select_article']) #based on character
-        print(select_character,select_article)
+        data = request.form
+        print(type(data['pipeline']))
+        pipeline = int(data['pipeline'])
+        selectedCharacter = int(data['selectedCharacter']) #based on character
+        selectedArticle = int(data['selectedArticle']) #based on character
+        print(selectedCharacter,selectedCharacter)
 
         hiddenState = Hiddenstates[pipeline]
         hiddenState1 = Hiddenstates[pipeline+1]
-        revised,revised_axis,all_,forward_,backward_ = tsne2json_revised(select_article,news_pirChart[select_article],select_character,hiddenState1[select_character],hiddenState1,pipeline)
-        revised0,revised_axis0,all0_,forward0_,backward0_ = tsne2json_revised(select_article,news_pirChart[select_article],select_character,hiddenState[select_character],hiddenState,pipeline)
-        # revised0,revised_axis0 = tsne2json_revised(select_article,news_pirChart[select_article],select_character,news_hidden[select_character],news_hidden,perp)
+        revised,revised_axis = tsne2json_revised(selectedCharacter, hiddenState1)
+        revised0,revised_axis0 = tsne2json_revised(selectedCharacter, hiddenState)
+
         print("Tsne done")
-        # scatter = {'hidden':{'tsne':tsen_h,'axis':axis},'hidden1':{'tsne':tsen_h1,'axis':axis_1},"revised":{"tsne":revised,"axis":revised_axis}}
-        scatter = {'hidden':{'tsne':revised0,'axis':revised_axis0},"revised":{"tsne":revised,"axis":revised_axis}}
+        scatter = {'hidden':{'tsne':revised0,'axis':revised_axis0},"hidden1":{"tsne":revised,"axis":revised_axis}}
+        # labelViewOrder0 = getOrder(char_list_json_news,revised0)
+        # labelViewOrder1 = getOrder(char_list_json_news,revised)
     return {"scatter":scatter,"charJson":char_list_json_news}
 
 @app.route("/changePOSWS", methods=['POST'])
@@ -191,12 +194,78 @@ def changeWS():
 
     return {"content":content}
 
+# changeWS
+@app.route("/changePOS", methods=['POST'])
+def changePOS():
+    if request.method == 'POST':
+        content = json.loads(request.form.get('hithere'))
+        print(len(content))
+        article = int(request.form['article'])
+        articelSum = np.sum(articelLength[:article])
+
+        new_begin = int(request.form['character'])-articelSum
+        map_begin = int(request.form['map_begin']) #labelView order
+        POSchange = request.form['name']
+        print("new_begin",new_begin,"map_begin",map_begin)
+        print(content[map_begin])
+        
+        sentence_list = onto_sect[int(article)]
+        print(sentence_list)
+        ws = WS("./data", )
+        pos = POS("./data",)
+        ner = NER("./data",)
+        word_sentence_list, seq_sentence_list = ws(sentence_list,)
+        pos_sentence_list = pos(word_sentence_list)
+        index2word=[]
+        for i,word in enumerate(word_sentence_list[0]):
+            print(len(word)*[i])
+            index2word += len(word)*[i]
+        
+        wordIndex = index2word[new_begin]
+        pos_sentence_list[0][wordIndex] = POSchange
+        entity_sentence_list, label_sentence_list, logits, hiddenState_all,c_v,w_v,label_list,sample_list = ner(word_sentence_list, pos_sentence_list)
+
+
+        label_list_ = np.array(label_list).copy()
+        for i,label in enumerate(label_list):
+            label_list_[i] = label.split(':')[0]
+
+        predict_avg_set = []
+        label_set = []
+        result = np.where(logits<0, 0, logits)
+        for i, char in enumerate(result):
+            predict_index = np.argsort(-char)
+            predict_value = char[predict_index]
+            predict_sum = np.sum(predict_value)
+            predict_avg = (predict_value/predict_sum)[:3].tolist()
+            label_ = label_list_[predict_index][:3].tolist()
+            predict_avg_set.append(predict_avg)
+            label_set.append(label_)
+
+        entity_list_order = ["O"]*len(sentence_list[0])
+        for entity in sorted(entity_sentence_list):
+            for k in range(entity[0],entity[1]):
+                entity_list_order[k]=entity[2]
+
+
+        char= content[map_begin]
+
+        char["predicts"] = predict_avg_set[new_begin]
+        char["label_list"] = label_set[new_begin]
+        char["entropy"] = str(entropy(result[new_begin]))
+        char["ner"] = entity_list_order[new_begin]
+        char["pos"] = POSchange
+
+
+    return {"content":content}
+
 diff_index = np.array([])
 @app.route("/wordCloud", methods=['POST'])
 def wordCloud():
     global diff_index
     print(diff_index)
     if request.method == 'POST':
+        print("wordCloud")
         click_index = int(request.form['click_index'])
         print(click_index,len(onto_list),len(Hiddenstates[1]))
         print(click_index,onto_list[click_index],onto_list[click_index-3:click_index+3])

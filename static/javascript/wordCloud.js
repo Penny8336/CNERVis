@@ -1,4 +1,4 @@
-function wordCloud(data,select_,index,diff_index_WC){
+function wordCloud(data,select_,index,diff_index_WC,neighborhoodChar, indexs){
     console.log(data)
     console.log(index)
     $(select_).empty()
@@ -58,7 +58,7 @@ function wordCloud(data,select_,index,diff_index_WC){
 
                         console.log(data)     
                         console.log(data.WC_Select)
-                        returnIndex_(data.WC_Select[0],data.WC_Select,"#tra_context",0)
+                        returnIndex_(neighborhoodChar, indexs,data.WC_Select,"#tra_context",0)
                     } 
                 }); 
             })

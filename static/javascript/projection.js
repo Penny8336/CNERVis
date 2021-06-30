@@ -1,4 +1,4 @@
-function draw_tsne(scatter,axis_,select_,chatJson, select_char){
+function draw_tsne(neighborhood,axis_,select_,chatJson){
 
     var margin = {top: 20, right: 20, bottom: 20, left: 10},
         width = 450 - margin.left - margin.right,
@@ -47,22 +47,11 @@ function draw_tsne(scatter,axis_,select_,chatJson, select_char){
         .attr("height", height + margin.top + margin.bottom)
         .attr("class","scatterplot")
         .style("text-align","center")
-        // .call(d3.zoom().on("zoom", function () {
-        //     overview_scatterplot.attr("transform", d3.event.transform)
-        //  }))
 
     var pie_charts = overview_scatterplot.append("g") // pie charts
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-    
-    // var xAxis = pie_charts.append("g")
-    //     .attr("transform", "translate(0," + height + ")")
-    //     .call(d3.axisBottom(xScale));
 
-    // var yAxis = pie_charts.append("g")
-    //     .call(d3.axisLeft(yScale));
-
-    scatter.forEach(function(d,i){
-        // var pies = pie(d3.entries(d.predicts))
+    neighborhood .forEach(function(d,i){
         d['x'] = +(d.x)
         d['y'] = +(d.y)
         d['scaleX'] = xScale(d.x)
@@ -71,7 +60,7 @@ function draw_tsne(scatter,axis_,select_,chatJson, select_char){
         })
 
     var circles = pie_charts.selectAll(null)
-        .data(scatter)
+        .data(neighborhood)
         .enter()
         .append("g")
         .property("radius", function (d) {
@@ -81,28 +70,10 @@ function draw_tsne(scatter,axis_,select_,chatJson, select_char){
             return "translate(" + d.scaleX + "," + d.scaleY + ")";
         })
         .attr("class","pies")
-        .attr("stroke", function(d) {
-                // if (!(d.kurtosis)) return "red"
-                // return "black"
-            // console.log(d.entropy)
-            return colorScale(d.entropy)
-        })  
-        .attr("class",d => { return "dot_index" + d.index +" "+ "pies" + " from" + d.from})
-        .attr("stroke-width", function(d) {
-            // console.log(d.entropy < 0.01)
-            if (d.entropy == 0 ) {
-                return "0px"
-            }
-            // else if (d.predicts.lastIndexOf(0)>0){
-            //     return "0px"
-            // }
-            else{
-                return "0.5px"
-            }
-            // console.log(d.entropy)
-            
-        })  
-        .attr("id",d => { return "c_index" + d.index })
+        .attr("stroke", d => { return colorScale(d.entropy)})  
+        .attr("class",d => { return "nearest"+d.nearest +" "+ "dot_index" + d.index.char +" "+ "pies" + " from" + d.from})
+        .attr("stroke-width", d => { return (d.entropy < 0.2 ? 0 : 0.5)})
+        .attr("id",d => { return "c_index" + d.index.char })
         .style("opacity", default_opacity)
 
         // .on("mouseover",function(d){ console.log(d.index)})
@@ -123,12 +94,12 @@ function draw_tsne(scatter,axis_,select_,chatJson, select_char){
             // .on("mouseleave", mouseleave )
 
     var simulation = d3.forceSimulation()
-        .force("collision", d3.forceCollide(d => d.radius*1.1)) // Repulsion force
+        .force("collision", d3.forceCollide(d => d.radius*1.2)) // Repulsion force
         .force("x_force", d3.forceX(d => d.scaleX)) // Each point attacted to its center x and y
         .force("y_force", d3.forceY(d => d.scaleY))
 
     simulation
-        .nodes(scatter)
+        .nodes(neighborhood)
         .on("tick", function(d){
             circles
                 .attr("transform", function (d) {
@@ -182,29 +153,126 @@ function draw_tsne(scatter,axis_,select_,chatJson, select_char){
         groups = selects._groups[0]
         groups_index=""
         groups_index_C=""
-        groups_number=[]
+        groups_number = []
+        selectedNearest = []
+        selectedIndex = []
+        
         groups.forEach(function(d){
-            groups_index = groups_index.concat("#"+d.id.slice(2,)+",")
-            groups_index_C = groups_index_C.concat("#c_"+d.id.slice(2,)+",")
+            nearestOrder = parseInt(d.classList[0].slice(7,))
+            nearestIndex = d.id.slice(2,)
+            nearestIndex_ = parseInt(d.id.slice(7,))
+
+
+            selectedNearest.push(nearestOrder)
+            selectedIndex.push(nearestIndex_)
+
+            groups_index = groups_index.concat("#"+nearestIndex+",")
+            groups_index_C = groups_index_C.concat("#c_"+nearestIndex+",")
             groups_number.push(parseInt(d.id.slice(7, )))
-        });
 
+        });     
         groups_index= groups_index.slice(0, -1)
-
-        // d3.selectAll(".pies")
-        // .style("opacity", default_opacity)
         groups_index_C= groups_index_C.slice(0, -1)
 
-        console.log(groups_index,groups_index_C)
-        d3.select("#heatMap").selectAll(groups_index)
-        .style("opacity", 0.8)    
-        .style('box-shadow', "3px 3px 12px black")
+        console.log("selectedNearest",selectedNearest)
+        console.log("selectedIndex",selectedIndex)
+
+        if (!(selectedIndex.includes(selectedCharacter))){
+            selectedNearest.push(0)
+            selectedIndex.push(selectedCharacter)
+        }
+
+        console.log("selectedNearest",selectedNearest)
+        console.log("selectedIndex",selectedIndex)
+
+        let orderSet = {}
+        selectedIndex.forEach((key, i) => orderSet[key] = selectedNearest[i]);
+
+        function compareNumbers(a, b) {
+            return a - b;
+        }
+        function getKeyByValue(object, value) {
+            return Object.keys(object).find(key => object[key] === value);
+        }
+
+        selectedIndexSort = selectedIndex.sort(compareNumbers)
+
+        selectedAvoidOverlap=[]
+        selectedNumber = selectedIndex.length-1
+        for (let i = 0; i < selectedNumber; i++){
+            if (!((selectedIndexSort[i]+1 == selectedIndexSort[i+1])||(selectedIndexSort[i]-1 == selectedIndexSort[i+1]))){
+                selectedAvoidOverlap.push(selectedIndexSort[i])
+            }
+        }
+        selectedAvoidOverlap.push(selectedIndexSort[selectedNumber])
+
+        reOrder = []
+        selectedAvoidOverlap.forEach(function(d){
+            order = orderSet[d]
+            reOrder.push(order)
+        })
+        reOrder = reOrder.sort(compareNumbers)
+
+        selectedOrder =[]
+        context = []
+        reOrder.forEach(function(d){
+            key = getKeyByValue(orderSet,d)
+            key = parseInt(key)
+            context = context.concat(chatJson.slice(key-5,key+6))
+            selectedOrder.push(key)
+        })
+
+        neighborhoodChar=""
+        selectedIndex.forEach(function(d){
+            neighborhoodChar = neighborhoodChar.concat("#index"+d+",")
+        });
+        neighborhoodChar = neighborhoodChar.slice(0,-1)
+
+
+        posSet = new Set();
+        // console.log(context_)
+        context.forEach(d => {
+            posTag = d.pos
+            if (punctuationSet.has(posTag)){
+                return posSet.add("Z")
+            }
+            else if(twoCharSet.has(posTag.slice(0,2))){
+                return posSet.add(posTag.slice(0,2))
+            }
+            else{
+                return posSet.add(posTag.slice(0,1))
+            }
+        });
+    
+        posSet= [...posSet]
+    
+        posSet.sort(function (a, b) {
+            return a.localeCompare(b);
+          });
+
+        draw_legend(posSet,"#posLegend","legendsPOS")
+        returnIndex_(neighborhoodChar,groups_index,context,"#context",1)
+
+        // groups_index_C= groups_index_C.slice(0, -1)
+
+        // console.log(groups_index,groups_index_C)
+        // d3.select("#heatMap").selectAll(groups_index)
+        // .style("opacity", 0.8)    
+        // .style('box-shadow', "3px 3px 12px black")
 
         d3.selectAll(groups_index_C)
-        .style('opacity', 0.8)
-        .style("filter","drop-shadow(1px 1px 3px black)")
+            .style('opacity', 0.8)
+            .style("filter","drop-shadow(1px 1px 3px black)")
 
-        get_group(groups_number,groups_index,chatJson,"#context",select_char)
+        d3.select("#c_index"+selectedCharacter)
+            .style('opacity', 0.8)
+            .style("filter","drop-shadow(1px 1px 3px red)")
+        // console.log(groups_number,groups_index)
+
+        // selectedNeighborhood = []
+                
+
+        // get_group(context,groups_number,groups_index,chatJson,"#context")
 
 
     };
@@ -218,7 +286,7 @@ function draw_tsne(scatter,axis_,select_,chatJson, select_char){
         .on("draw",lasso_draw)
         .on("end",lasso_end);
     
-    d3.selectAll("#c_index"+select_char)
+    d3.selectAll("#c_index"+selectedCharacter)
         .style("opacity", 1)
         .style("filter","drop-shadow(1px 1px 4px red)")
         .attr("stroke-width",1)

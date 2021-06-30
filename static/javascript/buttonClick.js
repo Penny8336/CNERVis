@@ -63,10 +63,36 @@ function posOrTraining(){
 
 }
 
-function onchange(){
+function changePOS(){
     console.log("hi there")
-    console.log(d3.select(this))
-    console.log(clickTheCharacter)
+    var selectList = document.getElementById("selections")
+    console.log(selectList)    
+    var index = selectList.selectedIndex;
+    var pos = selectList.options[index].text
+    console.log(index)    
+    console.log(pos)
+    console.log(clickTheCharacter)    
+    console.log(clickTheOrder)
+    console.log("clickArticle",clickArticle)
+    console.log(selectedContext)
+
+    $.ajax({ 
+        type: "POST", 
+        url: "/changePOS", 
+        data: {"name":"Nv","character":clickTheCharacter,"map_begin":clickTheOrder, "article":String(clickArticle), hithere:JSON.stringify(selectedContext)},
+        success: function(data,textStatus,jqXHR ){ 
+            console.log("success hi there post success")      
+            contentNew = data.content
+            console.log(contentNew)
+            // open_tsne_1(scatter.hidden1)
+            $("#context").empty()
+            $("#tra_context").empty()
+            returnIndex_(indexs,contentNew,select_,pos_truth,contentNew)
+
+            // // draw_heatmap(scatter.hidden1.tsne.all_)
+            
+        } 
+    }); 
     changePOS+=1
     console.log("onchange")
 }

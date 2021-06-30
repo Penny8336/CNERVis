@@ -1,6 +1,8 @@
 clickTheCharacter=0
+clickTheOrder=0
+clickArticle=0
 changePOS=1
-function returnIndex_(indexs,context_,select_,pos_truth,select_context){
+function returnIndex_(neighborhoodChar,indexs,context_,select_,pos_truth){
     layer = context_.length/11
     $(select_).empty()
 
@@ -97,7 +99,7 @@ function returnIndex_(indexs,context_,select_,pos_truth,select_context){
             y_timeStep = parseInt(i/timeStep_len)
             return yScale(y_timeStep) })
         .attr("class", "block")
-        .attr("width",           function(d,i){
+        .attr("width", function(d,i){
             x_timeStep = i % timeStep_len
             if (x_timeStep==0 && +(d.BI) ==0){
                 block_width = xScale.bandwidth() * d.heatMap_block
@@ -194,7 +196,8 @@ function returnIndex_(indexs,context_,select_,pos_truth,select_context){
             console.log(d)
             clickTheCharacter = d.index.char
             console.log("clickTheCharacter",clickTheCharacter)
-            if (changePOS%2){
+            console.log(changePOS%2)
+            if (!(changePOS%2)){
                 $.ajax({ 
                     type: "POST", 
                     url: "/wordCloud", 
@@ -204,8 +207,8 @@ function returnIndex_(indexs,context_,select_,pos_truth,select_context){
                         console.log("hi there post success")      
                         console.log(data)
                         console.log(data.wordCloud)
-                        returnIndex_(groups_index,data.tra_nearest,"#tra_context",0,0)
-                        wordCloud(data.wordCloud,"#wordCloud",d.index,data.diff_index_WC)
+                        returnIndex_(neighborhoodChar, indexs,data.tra_nearest,"#tra_context",0)
+                        wordCloud(data.wordCloud,"#wordCloud",d.index,data.diff_index_WC,neighborhoodChar, indexs)
                     } 
                 }); 
             }
@@ -251,11 +254,12 @@ function returnIndex_(indexs,context_,select_,pos_truth,select_context){
         .attr('dy', '.35em')
         .style("font-size","17px")
         .attr("id",d => {return "index" + d.index.char})
-
+        // .style("font-weight","bold")
 
     d3.select("#context_svg").selectAll("text")
         .style("opacity", 0.4)
-    d3.selectAll(indexs)
+
+    d3.selectAll(neighborhoodChar)
         .style("opacity", 1)   
     
     if (!pos_truth){
@@ -275,7 +279,6 @@ function returnIndex_(indexs,context_,select_,pos_truth,select_context){
     range_click_time=0
     function changeWS(d,i){
         console.log(d,i,d3.select(this))
-        console.log(select_context)
         d3.select(this)
         // .style("stroke-width", 2)
         .style("opacity", 0.8)
@@ -288,6 +291,10 @@ function returnIndex_(indexs,context_,select_,pos_truth,select_context){
                 console.log("case0",d.index.char)
                 new_begin = d.index.char
                 map_begin = i
+                clickTheCharacter = new_begin
+                clickTheOrder = map_begin
+                clickArticle = d.index.article
+
                 break;
             case 1:
                 new_end = d.index.char
@@ -298,7 +305,7 @@ function returnIndex_(indexs,context_,select_,pos_truth,select_context){
                     url: "/changeWS", 
                     data: {"open_tsne":0,"perp":perp,"changeWS":1,"character_begin":new_begin,"character_end":new_end,
                         "map_begin":map_begin,"map_end":map_end,
-                        "article":d.index.article,hithere:JSON.stringify(select_context)},
+                        "article":d.index.article, hithere:JSON.stringify(context_)},
                     success: function(data,textStatus,jqXHR ){ 
                         console.log("success hi there post success")      
                         contentNew = data.content
@@ -306,7 +313,7 @@ function returnIndex_(indexs,context_,select_,pos_truth,select_context){
                         // open_tsne_1(scatter.hidden1)
                         $("#context").empty()
                         $("#tra_context").empty()
-                        returnIndex_(indexs,contentNew,select_,pos_truth,contentNew)
+                        returnIndex_(neighborhoodChar,indexs,contentNew,select_,pos_truth,contentNew)
 
                         // draw_heatmap(scatter.hidden1.tsne.all_)
                         

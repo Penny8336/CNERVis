@@ -1,10 +1,10 @@
 function draw_testingOverview(scatter,news,range){
-    console.log(scatter)
-    console.log(news)
-    console.log(range.min,range.max)
+    // console.log(scatter)
+    // console.log(news)
+    // console.log(range.min,range.max)
 
     var margin = {top: 10, right: 20, bottom: 10, left: 20},
-        width = 880 - margin.left - margin.right,
+        width = 800 - margin.left - margin.right,
         height = 300 - margin.top - margin.bottom;
 
     d3.select(".range-slider")
@@ -17,16 +17,18 @@ function draw_testingOverview(scatter,news,range){
         instance,
         min = range.min,
         max = range.max,
+        // max = (range.max == 2.48 ? 2.3 : range.max)
         from = 0,
         to = 0;
+    
 
     $range.ionRangeSlider({
         skin: "round",
         type: "double",
         min: min,
         max: max,
-        from: max/1.2,
-        to: max,
+        from: max/1.26,
+        to: max/1.09,
         onStart: updateInputs,
         onChange: updateInputs,
         step:0.01
@@ -46,20 +48,20 @@ function draw_testingOverview(scatter,news,range){
     }
 
     function changeRange(from,to){
-        console.log(from,to)
+        // console.log(from,to)
         let entropyRange_ = scatter.filter(word => word.max_entropy > from);
-        let entropyRange = entropyRange_.filter(word => word.max_entropy < to);
-        console.log(entropyRange_)
-        console.log(entropyRange)
-        draw_overview(entropyRange,from,to)
+        let entropyRange = entropyRange_.filter(word => word.max_entropy <= to);
+        numnerword = (entropyRange.length)-1
+        draw_overview(entropyRange,entropyRange[numnerword].max_entropy,entropyRange[0].max_entropy)
     }
 
     function draw_overview(entropyRange,from,to){
+        // console.log(from,to,width,entropyRange)
         $('#forceAxis > svg').remove()
-        let total = (entropyRange.length)-1
+
         var xScale = d3.scaleLinear()
-            .range([ 0, width])
-            .domain([entropyRange[total].max_entropy-0.1,entropyRange[0].max_entropy+0.1]) //min.max
+            .range([ 0, width-100])
+            .domain([from-0.01,to]) //min.max
 
     let article_index = 0
     var overview_scatterplot = d3.select("#forceAxis")
@@ -85,13 +87,12 @@ function draw_testingOverview(scatter,news,range){
             .attr("class","rectText_")
             .on("click",function(d){
                 index = d.dount[0].index
-                character_index = index.char
                 article_index = index.article
-                word=""
-                d.dount.forEach(d => word += ".waffle"+d.index.char+",")
+                classWord=""
+                d.dount.forEach(d => classWord += ".waffle"+d.index.char+",")
 
-
-                draw_heatmap(news[article_index].heatmap, index, word)
+                console.log("index",index,"classWord",classWord)
+                draw_heatmap(news[article_index].heatmap, classWord)
                 draw_legend(news[article_index].set,"#heatMap_set","legendsAll")
             })
 
@@ -157,6 +158,8 @@ function draw_testingOverview(scatter,news,range){
         .attr("width", (d, i) => bbox[i].getBBox().width+6)
         .attr("height", (d, i) => bbox[i].getBBox().height)
         .style('fill', function (d){return color_.waffle[d.ner]})
+        .attr("rx", 5)
+        .attr("ry", 5)
 
         let tooltip = d3.select('#forceAxis_svg')
         .append("g")
@@ -261,17 +264,11 @@ function draw_testingOverview(scatter,news,range){
 
 
 
-function draw_heatmap(content,article_index,wordlist){
-    console.log(wordlist)
-    character = article_index.char
-    article = article_index.article 
-    console.log("heatmap",article,character )
-
+function draw_heatmap(content,classWord){
     colorScale 
     .domain([0,0.2, 0.5, 0.7, 1, 1.2, 1.5])
     .range(d3.schemeOrRd[8]);
     
-
     $('#heatMap').empty()
     let heatMap = d3.select("#heatMap")
     click_flag=0
@@ -289,18 +286,10 @@ function draw_heatmap(content,article_index,wordlist){
         })
         .style('background-color', function (d){return color_.waffle[d.ner]})
         .style('border', function (d){
-            // if (!(d.kurtosis)) {
-            //     return "3px solid"
-            // }
-            // console.log(d.entropy)
             return "3px solid"
         })
 
         .style('border-color', function (d){
-            // if (!(d.kurtosis)) {
-            //     return "red"
-            // }
-            // console.log(d.entropy)
             return colorScale(d.entropy)
         })  
         .attr("id",d => {return "index" + d.index.char})
@@ -312,29 +301,27 @@ function draw_heatmap(content,article_index,wordlist){
             click_flag = 1
             // heatMap.style('opacity', default_opacity)
             d3.selectAll("#"+this.id)
-            .style('opacity', 1)
+                .style('opacity', 1)
             d3.selectAll("#"+this.id)
-            .style('box-shadow', "3px 3px 10px black")
+                .style('box-shadow', "3px 3px 10px black")
 
             d3.select("#c_"+this.id)
-            .style('opacity', 1)
-            .attr("stroke-width", 2)
+                .style('opacity', 1)
+                .attr("stroke-width", 2)
 
-            character_index = d.index.char
-            article_index = d.index.article
-
-
-            
-            post_tsne(character_index,article_index,0)
+            selectedCharacter = d.index.char
+            selectedArticle = d.index.article
+            pipeline = 0 //for check NER
+            post_tsne(pipeline)
 
         })
 
         d3.selectAll(".heatMaps")
             .style('opacity', 0.9)
 
-        wordlist = wordlist.slice(0, -1)
-        console.log(wordlist)
-        d3.selectAll(wordlist)
+        classWord = classWord.slice(0, -1)
+        // console.log(wordlist)
+        d3.selectAll(classWord)
             .style('box-shadow', "5px 5px 10px black")
             .style('opacity', 0.9)
 

@@ -92,6 +92,8 @@ def nearest(click_index,click_h,tra_hidden,h_direct,top_k):
         slice_word = char_list_json[index-5:index+6]
         context_ += slice_word[:]
 
+    for i, index in enumerate(context_):
+        context_[i]["index"] = {"char":context_[i]["index"]}
     #for wordcloud
     wordCloud={}
     for i, index in enumerate(diff_index_WC):
@@ -126,13 +128,12 @@ def find_sub_list(sl,l):
             results.append(ind)
     return results
 
-def tsne2json_revised(select_article, article, select_character, select_hidden, tra_hidden,perp):
+def tsne2json_revised(select_character, tra_hidden):
     print("tra_hidden.shape", tra_hidden.shape)
-    print("tra_hidden.shape", select_hidden.shape)
     print("select_character", select_character)
-    print("char_list_json_news.length",len(char_list_json_news))
-    # print(article)
-    tra_hidden=tra_hidden[:len(char_list_json_news)-1]
+    print("char_list_json_news.length",len(char_list))
+    selectedHidden = tra_hidden[select_character]
+    tra_hidden=tra_hidden[:len(char_list)-1]
     # accu = article['accu']
     # word = article['heatmap'][select_character-accu]['character']
 
@@ -150,7 +151,7 @@ def tsne2json_revised(select_article, article, select_character, select_hidden, 
 
     diffenent_=np.empty([tra_hidden.shape[0]])
     for i,compare_h in enumerate(tra_hidden):
-        diffenent = np.sum(abs(select_hidden-compare_h))
+        diffenent = np.sum(abs(selectedHidden-compare_h))
         diffenent_[i] = diffenent
 
     diff_index_top_k = np.argsort(diffenent_)[:remain] #return index 
@@ -162,12 +163,12 @@ def tsne2json_revised(select_article, article, select_character, select_hidden, 
     #order
     sort_index=[]
     for index in point:
-        sort_index.append(np.sum(abs(select_hidden-tra_hidden[index])))  #the different
+        sort_index.append(np.sum(abs(selectedHidden-tra_hidden[index])))  #the different
 
     sort_index = np.argsort(sort_index) # samll to big index
     point = np.array(point)[sort_index]
     print("sort point",point[:5])
-    print("char_list_json_news",len(char_list_json_news))
+    print("char_list_json_news",len(char_list))
     point = list(point)
 
     point_hiddenstate = tra_hidden[point]
@@ -213,8 +214,8 @@ def tsne2json_revised(select_article, article, select_character, select_hidden, 
         for i, key in enumerate(tsen2D):
             point_=point[i]
             print(point[i])
-            temp = char_list_json_news[point_].copy()
-            temp['nearest'] = 200-i
+            temp = char_list[point_].copy()
+            temp['nearest'] = i
             temp['x'] = str(round(key[0],2))
             temp['y'] = str(round(key[1],2))
             temp['radius'] = 5
@@ -228,7 +229,7 @@ def tsne2json_revised(select_article, article, select_character, select_hidden, 
         json_circle[list_S[k]] = json_
         json_=[]
 
-    return json_circle, json_axis,all_,forward_,backward_
+    return json_circle, json_axis
 
 #tsne的json 會收集資訊給interface 資訊 
 def tsen2json(perp,tsen_data,logits,label_sentence_list,sentence,entity_list_order,label_list,ws_count,pos_):
@@ -363,9 +364,3 @@ def wordCollection(thesame,word_):
     uncertainty = {'word_collect':wordCollect_,'range':entro}
 
     return uncertainty
-
-
-
-    
-
-
