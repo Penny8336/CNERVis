@@ -94,7 +94,7 @@ function draw_tsne(neighborhood,axis_,select_,chatJson){
             // .on("mouseleave", mouseleave )
 
     var simulation = d3.forceSimulation()
-        .force("collision", d3.forceCollide(d => d.radius*1.2)) // Repulsion force
+        .force("collision", d3.forceCollide(5.5)) // Repulsion force
         .force("x_force", d3.forceX(d => d.scaleX)) // Each point attacted to its center x and y
         .force("y_force", d3.forceY(d => d.scaleY))
 
@@ -174,9 +174,6 @@ function draw_tsne(neighborhood,axis_,select_,chatJson){
         groups_index= groups_index.slice(0, -1)
         groups_index_C= groups_index_C.slice(0, -1)
 
-        console.log("selectedNearest",selectedNearest)
-        console.log("selectedIndex",selectedIndex)
-
         if (!(selectedIndex.includes(selectedCharacter))){
             selectedNearest.push(0)
             selectedIndex.push(selectedCharacter)
@@ -230,8 +227,10 @@ function draw_tsne(neighborhood,axis_,select_,chatJson){
 
 
         posSet = new Set();
+        nerSet = new Set();
         // console.log(context_)
         context.forEach(d => {
+            nerSet.add(d.ner)
             posTag = d.pos
             if (punctuationSet.has(posTag)){
                 return posSet.add("Z")
@@ -245,12 +244,16 @@ function draw_tsne(neighborhood,axis_,select_,chatJson){
         });
     
         posSet= [...posSet]
+        nerSet= [...nerSet]
     
         posSet.sort(function (a, b) {
             return a.localeCompare(b);
           });
 
+
+
         draw_legend(posSet,"#posLegend","legendsPOS")
+        draw_legend(nerSet,"#nerLegend","legendsAll")
         returnIndex_(neighborhoodChar,groups_index,context,"#context",1)
 
         // groups_index_C= groups_index_C.slice(0, -1)

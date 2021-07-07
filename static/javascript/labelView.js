@@ -57,7 +57,7 @@ function returnIndex_(neighborhoodChar,indexs,context_,select_,pos_truth){
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")")
         .attr("id", "context_svg")
-        .style("margin-left","20px")
+        // .style("margin-left","20px")
 
     each_sentence.append("g")
         .attr("transform", "translate(0," + height + ")")

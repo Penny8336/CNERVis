@@ -54,6 +54,8 @@ div.tooltip {
 .range-slider {
   position: relative;
   height: 50px;
+  width: 95%; 
+  padding-left: 12%;
 }
 
 /* enter */

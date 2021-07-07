@@ -86,14 +86,25 @@ function draw_testingOverview(scatter,news,range){
             .append('g')
             .attr("class","rectText_")
             .on("click",function(d){
+                d3.selectAll(".rectText_")
+                .selectAll("rect")
+                .style("stroke-width",0)
+
                 index = d.dount[0].index
                 article_index = index.article
                 classWord=""
                 d.dount.forEach(d => classWord += ".waffle"+d.index.char+",")
+                
+                d3.select(this)
+                .select("rect")
+                .style("stroke-width",2)
+                .style("stroke","black")
 
+                console.log(d3.select(this))
                 console.log("index",index,"classWord",classWord)
                 draw_heatmap(news[article_index].heatmap, classWord)
                 draw_legend(news[article_index].set,"#heatMap_set","legendsAll")
+               
             })
 
 
@@ -114,7 +125,7 @@ function draw_testingOverview(scatter,news,range){
 
 
     var simulation = d3.forceSimulation()
-        .force("collision", d3.forceCollide(d => d.max_entropy*13)) // Repulsion force
+        .force("collision", d3.forceCollide(d => d.max_entropy*14)) // Repulsion force
         .force("x_force", d3.forceX(d => xScale(d.max_entropy)))
         .force("y_force", d3.forceY(d => 150))
 
@@ -161,6 +172,7 @@ function draw_testingOverview(scatter,news,range){
         .attr("rx", 5)
         .attr("ry", 5)
 
+
         let tooltip = d3.select('#forceAxis_svg')
         .append("g")
         .style("opacity", 0)
@@ -181,79 +193,90 @@ function draw_testingOverview(scatter,news,range){
             return pie_
         }
 
-        d3.selectAll('.rectText_')
-        .on("mouseover",function(d){ 
-            tooltip.style("opacity", 1)
-         })
-        .on("mousemove", function(d){
-            dount = d.dount
-            tooltipLength = d.dount.length
-            index = d.index
-            // x =  d3.mouse(this)[0]+400
-            // y =  d3.mouse(this)[1]+100
-            x = d3.event.pageX
-            y = d3.event.pageY
+        // d3.selectAll('.rectText_')
+        // .on("mouseover",function(d){ 
+        //     tooltip.style("opacity", 1)
+        //  })
+        // .on("mousemove", function(d){
+        //     dount = d.dount
+        //     tooltipLength = d.dount.length
+        //     index = d.index
+        //     // x =  d3.mouse(this)[0]+400
+        //     // y =  d3.mouse(this)[1]+100
+        //     x = d3.event.pageX
+        //     y = d3.event.pageY
 
-            // console.log(x,y-200,d3.mouse(this)[0]+400,d3.mouse(this)[1]+100)
+        //     var label = d3.arc()
+        //         .outerRadius(15)
+        //         .innerRadius(30);
 
-            tooltip
-            .html("details")
-            .attr("transform", "translate(" + (x) + "," + (y-200) + ")")
+        //     // console.log(x,y-200,d3.mouse(this)[0]+400,d3.mouse(this)[1]+100)
 
-            tooltip
-            .append('rect')
-            .style("width", function(d){
-                return tooltipLength*65+20 +"px"
-            })
-            .style("height","80px")
-            .style("fill", "#fff")
-            .style("stroke","black")
-            .style("stroke-width","2px")
+        //     tooltip
+        //     .html("details")
+        //     .attr("transform", "translate(" + (x) + "," + (y-200) + ")")
 
-            .style("position","absolute")
+        //     tooltip
+        //     .append('rect')
+        //     .style("width", function(d){
+        //         return tooltipLength*65+20 +"px"
+        //     })
+        //     .style("height","80px")
+        //     .style("fill", "#fff")
+        //     .style("stroke","black")
+        //     .style("stroke-width","2px")
 
-            let gDonut = tooltip.selectAll(null)
-            .data(dount)
-            .enter()
-            .append("g")
-            .attr("transform", function(d,i){
-                return "translate(" + (i*65+40) + "," + 40 + ")"
-            })
-            .style("position","absolute")
+        //     .style("position","absolute")
 
-            gDonut.selectAll()
-            .data(function(d) { return toDonut(d); })
-            .enter()
-            .append("path")
-            .attr('d', d3.arc()
-                .innerRadius(30)         // This is the size of the donut hole
-                .outerRadius(15)
-            )
-            .attr("fill",function(d) { 
-                nerString = d.data.key.split(":",1)
+        //     let gDonut = tooltip.selectAll(null)
+        //     .data(dount)
+        //     .enter()
+        //     .append("g")
+        //     .attr("transform", function(d,i){
+        //         return "translate(" + (i*65+40) + "," + 40 + ")"
+        //     })
+        //     .style("position","absolute")
+
+        //     gDonut.selectAll()
+        //     .data(function(d) { return toDonut(d); })
+        //     .enter()
+        //     .append("path")
+        //     .attr('d', d3.arc()
+        //         .innerRadius(30)         // This is the size of the donut hole
+        //         .outerRadius(15)
+        //     )
+        //     .attr("fill",function(d) { 
+        //         nerString = d.data.key.split(":",1)
                 
-                return color_.waffle[nerString]})
-            .attr("stroke", "black")
-            .style("stroke-width", "2px")
-            .style("opacity", 0.7)
+        //         return color_.waffle[nerString]})
+        //     .attr("stroke", "black")
+        //     .style("stroke-width", "2px")
+        //     .style("opacity", 0.7)
 
-
-            gDonut.selectAll()
-            .data(function(d){ return [d]})
-            .enter()
-            .append("text")
-            .text(function (d) {return d.character})
-            .style('text-anchor', 'middle')
-            .attr('dy', '.35em')
-            .style("font-size","17px")
-            .style("color","white")
-            .attr("id",d => {return "index" + d.index})
+        //     gDonut.selectAll()
+        //     .data(function(d){ return [d]})
+        //     .enter()
+        //     .append("text")
+        //     .text(function (d) {return d.character})
+        //     .style('text-anchor', 'middle')
+        //     .attr('dy', '.35em')
+        //     .style("font-size","17px")
+        //     .attr("id",d => {return "index" + d.index})
     
+        //     gDonut.selectAll()
+        //     .data(function(d) { return toDonut(d); })
+        //     .enter()
+        //     .append("text")
+        //     .text(function (d) { return d.data.key.split(":")[1]})
+        //     .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
+        //     .attr("dy", "0.35em")
+        //     .style("font-size","12px")
+        //     .style('text-anchor', 'middle')
 
-        })
-        .on("mouseleave", function(){
-            tooltip.style("opacity", 0)
-        })
+        // })
+        // .on("mouseleave", function(){
+        //     tooltip.style("opacity", 0)
+        // })
 
 
 

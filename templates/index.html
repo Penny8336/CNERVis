@@ -56,7 +56,12 @@
 						<div id = "forceAxis" style="text-align: center; color: azure;">
 							<svg></svg>
 						</div>
-						<div class="range-slider" style="width: 80%; padding-left: 10%;" ></div>
+						<div class ="uncertaintySplit " >
+							<div class="tobottom" >
+								<h6 class="uncertaintyEach " >Uncertainty</h6>
+							</div>
+							<div class="range-slider"  ></div>
+						</div>
 
 
 					</div>
@@ -80,8 +85,9 @@
 					<div class="break"></div>
 
 					<div class="change "> 
-						<button type="button" class="button change1" onclick="WSNeighborhood()">WS Neighborhood</button>
-						<button type="button" class="button change1" onclick="POSNeighborhood()">POS Neighborhood</button>
+						<button type="button" class="button change1" >NER Neighborhood</button>
+						<button type="button" class="button change1" onclick="WSNeighborhood()" style="opacity: 0.5;">WS Neighborhood</button>
+						<button type="button" class="button change1" onclick="POSNeighborhood()" style="opacity: 0.5;">POS Neighborhood</button>
 					</div>
 					<div class="uncertaintyEach "></div>
 
@@ -114,7 +120,7 @@
 					</div>
 					<div class="item1  " id="hid0_backward" style="text-align: center;">
 						<div style="padding-left: 11px; padding-top: 2px; height: 30px; background-color: #cad7db;">
-							<h5>Neighborhood View-Forward-layer1</h5>
+							<h5>Neighborhood View-Backward-layer1</h5>
 						</div>
 					</div>
 
@@ -142,26 +148,29 @@
 									<!-- <button type="button" class="button pulldown" onclick="posOrTraining()" >Change POS</button> -->
 								</div>
 							</div>
-							<div class="split65 uncertaintyEach legend buss_ legendAll" id="posLegend" style="padding-bottom: 10px; padding-top: 8px ;"></div>
+							<div class="uncertaintyEach"><h6 style="padding-top: 15px;padding-left: 5px">POS</h6></div>
+							<div class="split65 uncertaintyEach legend buss_ legendAll" id="posLegend" style="padding-bottom: 10px; padding-top: 8px ;">
+							</div>
 							<!-- <button type="button" class="button button1" onclick="HidePOS()" style="height: 28px;">Hide POS</button> -->
 						</div>	
 
 						<div class = box id="context" style="text-align: center;"></div>
-						<div class="legend" id="legend_l" ></div>
+						<!-- <div  class="legend legendAll" id="nerLegend" ></div> -->
+
 
 					
 					</div>
 					<div class="item1 half_w"  style="justify-content: center;">
-						<div style="padding-left: 11px; padding-top: 2px; height: 30px; background-color: #cad7db;">
+						<div style="text-align: center; padding-left: 11px; padding-top: 2px; height: 30px; background-color: #cad7db;">
 							<h5>Training Data View</h5>
 						</div>	
-						<div class = uncertaintySplit>
+						<!-- <div class = uncertaintySplit>
 							<div class="half_h uncertaintyEach button_">
 								<div style="padding-left: 10px; " >
 									<button type="button" class="button button1" >Word Cloud</button>
 								</div>
 							</div>
-						</div>	
+						</div>	 -->
 
 						<div id="wordCloud" style="text-align: center;"></div>
 						<div class = box id="tra_context" style="text-align: center;"></div>

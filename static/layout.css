@@ -144,6 +144,18 @@
 
 }
 
+#nerLegend{
+  padding-left: 5%
+}
+.tobottom{
+  position:relative;
+}
+
+.tobottom h6{
+  position:absolute;
+  bottom:0px;
+  left:10px;}
+
 /* Toggle Switch */
 .Toggle {
 display: flex;
